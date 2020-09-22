@@ -14,7 +14,7 @@
 import random
 import constants
 import core
-# import pygame
+import pygame
 
 
 def make_gnome_vision(state, gnome):
@@ -133,3 +133,141 @@ def add_gem(state):
 
 def add_gold(state, gold):
     return state
+
+
+# TEXT
+
+def find_exit_distance(gnome):
+    return abs(constants.EXIT_Y - gnome.y) + abs(constants.EXIT_X - gnome.x)
+
+
+def check_coin_collect(gnome, gold):
+    for coin in gold:
+        if coin.x == gnome.x and coin.y == gnome.y:
+            return True
+    return False
+
+
+def update_gold_text_placeholder(font):
+    text = font.render("GOLD: ", True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 - constants.TEXT_WIDTH * 2,
+                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
+def update_exit_text_placeholder(font):
+    text = font.render("EXIT: ", True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 + constants.TEXT_WIDTH,
+                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
+def update_gold_text(font, collected_gold):
+    text = font.render(str(collected_gold), True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 - constants.TEXT_WIDTH,
+                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
+def update_exit_text(font, exit_distance):
+    text = font.render(str(exit_distance), True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 + constants.TEXT_WIDTH * 2,
+                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
+# DRAWING
+
+def draw_scoreboard(screen):
+    pygame.draw.rect(screen, constants.SCOREBOARD_BACKGROUND, (0, constants.GAME_PLAY_HEIGHT + constants.MARGIN * 2,
+                                                               constants.GAME_PLAY_WIDTH + constants.MARGIN * 2,
+                                                               constants.SCOREBOARD_HEIGHT))
+
+
+def draw_margins(screen):
+    # Left line margin
+    pygame.draw.rect(screen, constants.MARGIN_BACKGROUND, (0, constants.MARGIN,
+                                                           constants.MARGIN, constants.GAME_PLAY_HEIGHT))
+    # Right line margin
+    pygame.draw.rect(screen, constants.MARGIN_BACKGROUND,
+                     (constants.MARGIN + constants.GAME_PLAY_WIDTH, constants.MARGIN,
+                      constants.MARGIN, constants.GAME_PLAY_HEIGHT))
+    # Top line margin
+    pygame.draw.rect(screen, constants.MARGIN_BACKGROUND, (0, 0,
+                                                           constants.MARGIN * 2 + constants.GAME_PLAY_WIDTH,
+                                                           constants.MARGIN))
+    # Bottom line margin
+    pygame.draw.rect(screen, constants.MARGIN_BACKGROUND, (0, constants.MARGIN + constants.GAME_PLAY_HEIGHT,
+                                                           constants.MARGIN * 2 + constants.GAME_PLAY_WIDTH,
+                                                           constants.MARGIN))
+
+
+def draw_grid(screen):
+    # Draws a grid to separate each game cell
+    for i in range(constants.CELL_AMOUNT_X - 1):
+        pygame.draw.rect(screen, constants.GRID_LINE_COLOR, (constants.MARGIN + i * constants.CELL_SIZE +
+                                                             constants.CELL_SIZE - constants.GRID_LINE_WIDTH / 2,
+                                                             constants.MARGIN,
+                                                             constants.GRID_LINE_WIDTH,
+                                                             constants.CELL_SIZE * constants.CELL_AMOUNT_Y))
+
+    for i in range(constants.CELL_AMOUNT_Y - 1):
+        pygame.draw.rect(screen, constants.GRID_LINE_COLOR, (constants.MARGIN,
+                                                             constants.MARGIN + i * constants.CELL_SIZE +
+                                                             constants.CELL_SIZE - constants.GRID_LINE_WIDTH / 2,
+                                                             constants.CELL_SIZE * constants.CELL_AMOUNT_X,
+                                                             constants.GRID_LINE_WIDTH))
+
+
+def draw_gnome(screen, gnome):
+    pygame.draw.circle(screen, constants.GNOME_COLOR,
+                       [int(gnome.x * constants.CELL_SIZE + constants.CELL_SIZE / 2) + constants.MARGIN,
+                        int(gnome.y * constants.CELL_SIZE + constants.CELL_SIZE / 2) + constants.MARGIN],
+                       int(constants.GNOME_RADIUS))
+
+
+def draw_gold(screen, gnome, vision_size, row, col):
+    pygame.draw.circle(screen, constants.GOLD_COLOR,
+                       [int((gnome.x + col - vision_size) * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
+                        constants.MARGIN,
+                        int((gnome.y + row - vision_size) * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
+                        constants.MARGIN],
+                       int(constants.GOLD_RADIUS))
+
+
+def draw_vision_cell(screen, gnome, vision_size, row, col):
+    pygame.draw.rect(screen, constants.GNOME_VISION_COLOR,
+                     ((col + gnome.x - vision_size) * constants.CELL_SIZE + constants.MARGIN,
+                      (row + gnome.y - vision_size) * constants.CELL_SIZE + constants.MARGIN,
+                      constants.CELL_SIZE, constants.CELL_SIZE))
+
+
+def draw_vision(screen, gnome, vision):
+    for row in range(len(vision)):
+        for col in range(len(vision[row])):
+            draw_vision_cell(screen, gnome, len(vision[0]) // 2, row, col)
+            if vision[row][col] == 2:
+                draw_gold(screen, gnome, len(vision[0]) // 2, row, col)
+
+
+def draw_exit(screen):
+    pygame.draw.rect(screen, constants.EXIT_COLOR, (constants.EXIT_X * constants.CELL_SIZE + constants.MARGIN,
+                                                    constants.EXIT_Y * constants.CELL_SIZE + constants.MARGIN,
+                                                    constants.CELL_SIZE, constants.CELL_SIZE))
+
+
+def draw_game(screen, gnome, vision):
+    draw_vision(screen, gnome, vision)
+    draw_margins(screen)
+    draw_scoreboard(screen)
+    draw_grid(screen)
+    draw_exit(screen)
+    draw_gnome(screen, gnome)
