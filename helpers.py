@@ -264,7 +264,15 @@ def draw_exit(screen):
                                                     constants.CELL_SIZE, constants.CELL_SIZE))
 
 
-def draw_game(screen, gnome, vision):
+def draw_scanned_map(screen, scanned_map):
+    for i in scanned_map:
+        pygame.draw.rect(screen, constants.SCANNED_MAP_COLOR, (i["x"] * constants.CELL_SIZE + constants.MARGIN,
+                                                               i["y"] * constants.CELL_SIZE + constants.MARGIN,
+                                                               constants.CELL_SIZE, constants.CELL_SIZE))
+
+
+def draw_game(screen, scaned_map, gnome, vision):
+    draw_scanned_map(screen, scaned_map)
     draw_vision(screen, gnome, vision)
     draw_margins(screen)
     draw_scoreboard(screen)

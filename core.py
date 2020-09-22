@@ -156,7 +156,7 @@ class Game:
             # Build up a black screen as a game background
             screen.fill(constants.GAME_BACKGROUND)
 
-            helpers.draw_game(screen, self.__gnome, self.__gnome_vision)
+            helpers.draw_game(screen, self.__scanned_map, self.__gnome, self.__gnome_vision)
 
             # gold_text_placeholder, gold_rect_text_placeholder = helpers.update_gold_text_placeholder(font)
             # screen.blit(gold_text_placeholder, gold_rect_text_placeholder)
