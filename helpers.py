@@ -37,7 +37,7 @@ def make_gnome_vision(state, gnome):
 
 
 # Coordinates of the scanned map are counted including margins
-def scan_map(scanned_map, gnome, gnome_vision):
+def scan_map(scanned_map, gnome, gnome_vision, state):
     # Loop through gnome vision and find those cells in the state and check if they are discovered
     # Each cell is represented as dict of { x, y, v } coordinates and value
     for row in range(len(gnome_vision)):
@@ -45,9 +45,14 @@ def scan_map(scanned_map, gnome, gnome_vision):
             cell = {
                 "x": col - gnome.vision_size + gnome.x,
                 "y": row - gnome.vision_size + gnome.y,
-                "v": gnome_vision[row][col]
+                "v": state[row - gnome.vision_size + gnome.y][col - gnome.vision_size + gnome.x]
             }
-            if cell not in scanned_map:
+            exists = False
+            for item in scanned_map:
+                if item["x"] == cell["x"] and item["y"] == cell["y"]:
+                    exists = True
+
+            if not exists:
                 scanned_map.append(cell)
 
     return scanned_map
