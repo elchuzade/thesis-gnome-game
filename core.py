@@ -32,8 +32,9 @@ class Game:
         self.__gnome = Gnome(constants.GNOME_X, constants.GNOME_Y)
         self.__gold = []
         self.__state = helpers.make_state(self.__gnome, self.__gold)
-        self.__scanned_map = []
         self.__gnome_vision = helpers.make_gnome_vision(self.__state, self.__gnome)
+        self.__scanned_map = helpers.scan_map([], self.__gnome, self.__gnome_vision, self.__state)
+        self.__covered_map = helpers.make_covered_map(self.__state, self.__scanned_map)
 
     def get_exit(self):
         return helpers.find_exit_distance(self.__gnome)
@@ -50,6 +51,9 @@ class Game:
 
     def get_scanned_map(self):
         return self.__scanned_map
+
+    def get_covered_map(self):
+        return self.__covered_map
 
     def get_gnome_vision(self, __print=False):
         if __print:
@@ -84,6 +88,7 @@ class Game:
         self.__state = helpers.make_state(self.__gnome, self.__gold)
         self.__gnome_vision = helpers.make_gnome_vision(self.__state, self.__gnome)
         self.__scanned_map = helpers.scan_map(self.__scanned_map, self.__gnome, self.__gnome_vision, self.__state)
+        self.__covered_map = helpers.make_covered_map(self.__state, self.__scanned_map)
         return self.__gnome_vision
 
     def __initialize_game(self):
@@ -156,7 +161,7 @@ class Game:
             # Build up a black screen as a game background
             screen.fill(constants.GAME_BACKGROUND)
 
-            helpers.draw_game(screen, self.__scanned_map, self.__gnome, self.__gnome_vision)
+            helpers.draw_game(screen, self.__scanned_map, self.__covered_map, self.__gnome, self.__gnome_vision)
 
             # gold_text_placeholder, gold_rect_text_placeholder = helpers.update_gold_text_placeholder(font)
             # screen.blit(gold_text_placeholder, gold_rect_text_placeholder)

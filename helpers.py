@@ -17,6 +17,26 @@ import core
 import pygame
 
 
+def make_covered_map(state, scanned_map):
+    result = []
+    for row in range(len(state)):
+        for col in range(len(state[row])):
+            cell = {
+                "x": col,
+                "y": row,
+                "v": state[row][col]
+            }
+            exists = False
+            for i in scanned_map:
+                if i["x"] == col and i["y"] == row:
+                    exists = True
+
+            if not exists:
+                result.append(cell)
+
+    return result
+
+
 def make_gnome_vision(state, gnome):
     x_vis = gnome.x + gnome.vision_size
     y_vis = gnome.y + gnome.vision_size
@@ -45,7 +65,7 @@ def scan_map(scanned_map, gnome, gnome_vision, state):
             cell = {
                 "x": col - gnome.vision_size + gnome.x,
                 "y": row - gnome.vision_size + gnome.y,
-                "v": state[row - gnome.vision_size + gnome.y][col - gnome.vision_size + gnome.x]
+                "v": state[row + gnome.y][col + gnome.x]
             }
             exists = False
             for item in scanned_map:
@@ -54,7 +74,6 @@ def scan_map(scanned_map, gnome, gnome_vision, state):
 
             if not exists:
                 scanned_map.append(cell)
-
     return scanned_map
 
 
@@ -256,6 +275,8 @@ def draw_vision(screen, gnome, vision):
             draw_vision_cell(screen, gnome, len(vision[0]) // 2, row, col)
             if vision[row][col] == 2:
                 draw_gold(screen, gnome, len(vision[0]) // 2, row, col)
+            elif vision[row][col] == 4:
+                draw_exit(screen)
 
 
 def draw_exit(screen):
@@ -266,16 +287,32 @@ def draw_exit(screen):
 
 def draw_scanned_map(screen, scanned_map):
     for i in scanned_map:
-        pygame.draw.rect(screen, constants.SCANNED_MAP_COLOR, (i["x"] * constants.CELL_SIZE + constants.MARGIN,
+        if i["v"] == 2:
+            pygame.draw.circle(screen,
+                               constants.GOLD_COLOR,
+                               [i["x"] * constants.CELL_SIZE + constants.MARGIN + constants.CELL_SIZE / 2,
+                                i["y"] * constants.CELL_SIZE * constants.CELL_SIZE + constants.CELL_SIZE / 2],
+                               int(constants.GOLD_RADIUS))
+        elif i["v"] == 4:
+            draw_exit(screen)
+        else:
+            pygame.draw.rect(screen, constants.SCANNED_MAP_COLOR, (i["x"] * constants.CELL_SIZE + constants.MARGIN,
+                                                                   i["y"] * constants.CELL_SIZE + constants.MARGIN,
+                                                                   constants.CELL_SIZE, constants.CELL_SIZE))
+
+
+def draw_cover(screen, covered_map):
+    for i in covered_map:
+        pygame.draw.rect(screen, constants.COVERED_MAP_COLOR, (i["x"] * constants.CELL_SIZE + constants.MARGIN,
                                                                i["y"] * constants.CELL_SIZE + constants.MARGIN,
                                                                constants.CELL_SIZE, constants.CELL_SIZE))
 
 
-def draw_game(screen, scaned_map, gnome, vision):
-    draw_scanned_map(screen, scaned_map)
+def draw_game(screen, scanned_map, covered_map, gnome, vision):
+    draw_cover(screen, covered_map)
+    draw_scanned_map(screen, scanned_map)
     draw_vision(screen, gnome, vision)
     draw_margins(screen)
     draw_scoreboard(screen)
     draw_grid(screen)
-    draw_exit(screen)
     draw_gnome(screen, gnome)
