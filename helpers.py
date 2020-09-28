@@ -253,6 +253,15 @@ def draw_gnome(screen, gnome):
                        int(constants.GNOME_RADIUS))
 
 
+def draw_gem(screen):
+    pygame.draw.circle(screen, constants.GEM_COLOR,
+                       [int(constants.GEM_X * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
+                        constants.MARGIN,
+                        int(constants.GEM_Y * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
+                        constants.MARGIN],
+                       int(constants.GEM_RADIUS))
+
+
 def draw_gold(screen, gnome, vision_size, row, col):
     pygame.draw.circle(screen, constants.GOLD_COLOR,
                        [int((gnome.x + col - vision_size) * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
@@ -269,16 +278,6 @@ def draw_vision_cell(screen, gnome, vision_size, row, col):
                       constants.CELL_SIZE, constants.CELL_SIZE))
 
 
-def draw_vision(screen, gnome, vision):
-    for row in range(len(vision)):
-        for col in range(len(vision[row])):
-            draw_vision_cell(screen, gnome, len(vision[0]) // 2, row, col)
-            if vision[row][col] == 2:
-                draw_gold(screen, gnome, len(vision[0]) // 2, row, col)
-            elif vision[row][col] == 4:
-                draw_exit(screen)
-
-
 def draw_exit(screen):
     pygame.draw.rect(screen, constants.EXIT_COLOR, (constants.EXIT_X * constants.CELL_SIZE + constants.MARGIN,
                                                     constants.EXIT_Y * constants.CELL_SIZE + constants.MARGIN,
@@ -287,14 +286,23 @@ def draw_exit(screen):
 
 def draw_scanned_map(screen, scanned_map):
     for i in scanned_map:
-        if i["v"] == 2:
+        if i["v"] == constants.GOLD_CODE:
             pygame.draw.circle(screen,
                                constants.GOLD_COLOR,
                                [i["x"] * constants.CELL_SIZE + constants.MARGIN + constants.CELL_SIZE / 2,
                                 i["y"] * constants.CELL_SIZE * constants.CELL_SIZE + constants.CELL_SIZE / 2],
                                int(constants.GOLD_RADIUS))
-        elif i["v"] == 4:
+        elif i["v"] == constants.GEM_CODE:
+            pygame.draw.circle(screen, constants.GEM_COLOR,
+                               [int(constants.GEM_X * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
+                                constants.MARGIN,
+                                int(constants.GEM_Y * constants.CELL_SIZE + constants.CELL_SIZE / 2) +
+                                constants.MARGIN],
+                               int(constants.GEM_RADIUS))
+
+        elif i["v"] == constants.EXIT_CODE:
             draw_exit(screen)
+
         else:
             pygame.draw.rect(screen, constants.SCANNED_MAP_COLOR, (i["x"] * constants.CELL_SIZE + constants.MARGIN,
                                                                    i["y"] * constants.CELL_SIZE + constants.MARGIN,
@@ -311,7 +319,6 @@ def draw_cover(screen, covered_map):
 def draw_game(screen, scanned_map, covered_map, gnome, vision):
     draw_cover(screen, covered_map)
     draw_scanned_map(screen, scanned_map)
-    draw_vision(screen, gnome, vision)
     draw_margins(screen)
     draw_scoreboard(screen)
     draw_grid(screen)
