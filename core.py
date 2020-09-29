@@ -4,6 +4,11 @@ import pygame
 import random
 # import numpy as np
 
+class Gold:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
 
 class Gnome:
     def __init__(self, x, y):
@@ -24,13 +29,11 @@ class Gnome:
 
 
 class Game:
-    def __init__(self, mode=constants.GAME_MODE, speed=constants.GAME_SPEED, gold_amount=constants.GOLD_AMOUNT):
+    def __init__(self, mode=constants.GAME_MODE):
         self.__mode = mode
-        self.__action_frequency = constants.FPS / speed
-        self.__speed = speed
-        self.__gold_amount = gold_amount
+        self.__action_frequency = constants.FPS / constants.GAME_SPEED
+        self.__gold = helpers.initialize_all_gold()
         self.__gnome = Gnome(constants.GNOME_X, constants.GNOME_Y)
-        self.__gold = []
         self.__state = helpers.make_state(self.__gnome, self.__gold)
         self.__gnome_vision = helpers.make_gnome_vision(self.__state, self.__gnome)
         self.__scanned_map = helpers.scan_map([], self.__gnome, self.__gnome_vision, self.__state)
@@ -161,7 +164,7 @@ class Game:
             # Build up a black screen as a game background
             screen.fill(constants.GAME_BACKGROUND)
 
-            helpers.draw_game(screen, self.__scanned_map, self.__covered_map, self.__gnome, self.__gnome_vision)
+            helpers.draw_game(screen, self.__scanned_map, self.__covered_map, self.__gnome)
 
             # gold_text_placeholder, gold_rect_text_placeholder = helpers.update_gold_text_placeholder(font)
             # screen.blit(gold_text_placeholder, gold_rect_text_placeholder)
