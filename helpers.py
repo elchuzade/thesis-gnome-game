@@ -194,6 +194,12 @@ def check_coin_collect(gnome, gold):
     return False
 
 
+def check_exit_reached(gnome):
+    if constants.EXIT_X == gnome.x and constants.EXIT_Y == gnome.y:
+        return True
+    return False
+
+
 def check_gem_collect(gnome):
     if constants.GEM_X == gnome.x and constants.GEM_Y == gnome.y:
         return True

@@ -41,6 +41,16 @@ class Game:
         self.__scanned_map = helpers.scan_map([], self.__gnome, self.__gnome_vision, self.__state)
         self.__covered_map = helpers.make_covered_map(self.__state, self.__scanned_map)
 
+    def reset(self):
+        self.__collected_gem = 0
+        self.__collected_gold = 0
+        self.__gold = helpers.initialize_all_gold()
+        self.__gnome = Gnome(constants.GNOME_X, constants.GNOME_Y)
+        self.__state = helpers.make_state(self.__gnome, self.__gold)
+        self.__gnome_vision = helpers.make_gnome_vision(self.__state, self.__gnome)
+        self.__scanned_map = helpers.scan_map([], self.__gnome, self.__gnome_vision, self.__state)
+        self.__covered_map = helpers.make_covered_map(self.__state, self.__scanned_map)
+
     def get_exit(self):
         return helpers.find_exit_distance(self.__gnome)
 
@@ -102,13 +112,14 @@ class Game:
                 self.__gnome.move(3)
 
         # Check if gnome has stepped on a gold
-        collect_gold = helpers.check_coin_collect(self.__gnome, self.__gold)
-        if collect_gold:
+        if helpers.check_coin_collect(self.__gnome, self.__gold):
             self.__remove_gold()
 
-        collected_gem = helpers.check_gem_collect(self.__gnome)
-        if collected_gem:
+        if helpers.check_gem_collect(self.__gnome):
             self.__remove_gem()
+
+        if helpers.check_exit_reached(self.__gnome):
+            self.reset()
 
         # Update state after moving gnome
         self.__state = helpers.make_state(self.__gnome, self.__gold)
