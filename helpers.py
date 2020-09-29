@@ -194,6 +194,12 @@ def check_coin_collect(gnome, gold):
     return False
 
 
+def check_gem_collect(gnome):
+    if constants.GEM_X == gnome.x and constants.GEM_Y == gnome.y:
+        return True
+    return False
+
+
 def update_gold_text_placeholder(font):
     text = font.render("GOLD: ", True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
     text_rect = text.get_rect()

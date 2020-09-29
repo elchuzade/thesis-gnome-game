@@ -31,6 +31,8 @@ class Gnome:
 class Game:
     def __init__(self, mode=constants.GAME_MODE):
         self.__mode = mode
+        self.__collected_gem = 0
+        self.__collected_gold = 0
         self.__action_frequency = constants.FPS / constants.GAME_SPEED
         self.__gold = helpers.initialize_all_gold()
         self.__gnome = Gnome(constants.GNOME_X, constants.GNOME_Y)
@@ -49,9 +51,6 @@ class Game:
         else:
             return self.__state
 
-    def scan_map(self):
-        self.__scanned_map = helpers.scan_map(self.__scanned_map, self.__gnome, self.__gnome_vision, self.__state)
-
     def get_scanned_map(self):
         return self.__scanned_map
 
@@ -64,6 +63,21 @@ class Game:
                 print(row)
         else:
             return self.__gnome_vision
+
+    def __remove_gold(self):
+        for index, coin in enumerate(self.__gold):
+            if coin.x == self.__gnome.x and coin.y == self.__gnome.y:
+                del self.__gold[index]
+                self.__collected_gold += 1
+                for i in self.__scanned_map:
+                    if i["x"] == self.__gnome.x and i["y"] == self.__gnome.y and i["v"] == constants.GOLD_CODE:
+                        i["v"] = 0
+
+    def __remove_gem(self):
+        self.__collected_gem += 1
+        for i in self.__scanned_map:
+            if i["x"] == self.__gnome.x and i["y"] == self.__gnome.y and i["v"] == constants.GEM_CODE:
+                i["v"] = 0
 
     def step(self, direction):
         # 0 - left, 1 - up, 2 - right, 3 - down
@@ -86,6 +100,15 @@ class Game:
             # Check if there is a wall on the left by finding the center of the gnome's vision
             if self.__gnome_vision[self.__gnome.vision_size + 1][self.__gnome.vision_size] != -1:
                 self.__gnome.move(3)
+
+        # Check if gnome has stepped on a gold
+        collect_gold = helpers.check_coin_collect(self.__gnome, self.__gold)
+        if collect_gold:
+            self.__remove_gold()
+
+        collected_gem = helpers.check_gem_collect(self.__gnome)
+        if collected_gem:
+            self.__remove_gem()
 
         # Update state after moving gnome
         self.__state = helpers.make_state(self.__gnome, self.__gold)
@@ -183,7 +206,6 @@ class Game:
             frame += 1
 
     def play(self):
-        self.play = True
         if self.__mode == "ai":
             print("ai playing")
         self.__initialize_game()
