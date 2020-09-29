@@ -181,8 +181,6 @@ def add_gold(state, gold):
     return state
 
 
-# TEXT
-
 def find_exit_distance(gnome):
     return abs(constants.EXIT_Y - gnome.y) + abs(constants.EXIT_X - gnome.x)
 
@@ -206,11 +204,14 @@ def check_gem_collect(gnome):
     return False
 
 
+# TEXT
+
+
 def update_gold_text_placeholder(font):
     text = font.render("GOLD: ", True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
     text_rect = text.get_rect()
     text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 - constants.TEXT_WIDTH * 2,
-                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+                        ((constants.SCOREBOARD_HEIGHT // 4) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
 
     return text, text_rect
 
@@ -219,7 +220,25 @@ def update_exit_text_placeholder(font):
     text = font.render("EXIT: ", True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
     text_rect = text.get_rect()
     text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 + constants.TEXT_WIDTH,
-                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+                        ((constants.SCOREBOARD_HEIGHT // 4) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
+def update_gem_text_placeholder(font):
+    text = font.render("GEM: ", True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 - constants.TEXT_WIDTH * 2,
+                        ((constants.SCOREBOARD_HEIGHT // 4 * 3) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
+def update_steps_text_placeholder(font):
+    text = font.render("STEP: ", True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 + constants.TEXT_WIDTH,
+                        ((constants.SCOREBOARD_HEIGHT // 4 * 3) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
 
     return text, text_rect
 
@@ -228,7 +247,7 @@ def update_gold_text(font, collected_gold):
     text = font.render(str(collected_gold), True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
     text_rect = text.get_rect()
     text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 - constants.TEXT_WIDTH,
-                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+                        ((constants.SCOREBOARD_HEIGHT // 4) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
 
     return text, text_rect
 
@@ -237,7 +256,25 @@ def update_exit_text(font, exit_distance):
     text = font.render(str(exit_distance), True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
     text_rect = text.get_rect()
     text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 + constants.TEXT_WIDTH * 2,
-                        ((constants.SCOREBOARD_HEIGHT // 2) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+                        ((constants.SCOREBOARD_HEIGHT // 4) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
+def update_gem_text(font, collected_gem):
+    text = font.render(str(collected_gem), True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 - constants.TEXT_WIDTH,
+                        ((constants.SCOREBOARD_HEIGHT // 4 * 3) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
+
+    return text, text_rect
+
+
+def update_steps_text(font, steps_taken):
+    text = font.render(str(steps_taken), True, constants.TEXT_COLOR, constants.SCOREBOARD_BACKGROUND)
+    text_rect = text.get_rect()
+    text_rect.center = (((constants.MARGIN * 2) + constants.GAME_PLAY_WIDTH) // 2 + constants.TEXT_WIDTH * 2,
+                        ((constants.SCOREBOARD_HEIGHT // 4 * 3) + constants.MARGIN * 2 + constants.GAME_PLAY_HEIGHT))
 
     return text, text_rect
 

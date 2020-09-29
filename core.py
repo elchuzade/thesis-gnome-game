@@ -31,6 +31,7 @@ class Gnome:
 class Game:
     def __init__(self, mode=constants.GAME_MODE):
         self.__mode = mode
+        self.__step_counter = 0
         self.__collected_gem = 0
         self.__collected_gold = 0
         self.__action_frequency = constants.FPS / constants.GAME_SPEED
@@ -42,6 +43,7 @@ class Game:
         self.__covered_map = helpers.make_covered_map(self.__state, self.__scanned_map)
 
     def reset(self):
+        self.__step_counter = 0
         self.__collected_gem = 0
         self.__collected_gold = 0
         self.__gold = helpers.initialize_all_gold()
@@ -53,6 +55,15 @@ class Game:
 
     def get_exit(self):
         return helpers.find_exit_distance(self.__gnome)
+
+    def get_gold(self):
+        return self.__collected_gold
+
+    def get_gem(self):
+        return self.__collected_gem
+
+    def get_steps(self):
+        return self.__step_counter
 
     def get_state(self, __print=False):
         if __print:
@@ -151,21 +162,25 @@ class Game:
                             action_taken = True
                             action = 0  # 0 means go left
                             self.step(action)
+                            self.__step_counter += 1
 
                         elif event.key == pygame.K_UP:
                             action_taken = True
                             action = 1  # 1 means go up
                             self.step(action)
+                            self.__step_counter += 1
 
                         elif event.key == pygame.K_RIGHT:
                             action_taken = True
                             action = 2  # 2 means go right
                             self.step(action)
+                            self.__step_counter += 1
 
                         elif event.key == pygame.K_DOWN:
                             action_taken = True
                             action = 3  # 3 means go down
                             self.step(action)
+                            self.__step_counter += 1
 
                 # Quit the game if the X symbol is clicked
                 if event.type == pygame.QUIT:
@@ -200,17 +215,37 @@ class Game:
 
             helpers.draw_game(screen, self.__scanned_map, self.__covered_map, self.__gnome)
 
-            # gold_text_placeholder, gold_rect_text_placeholder = helpers.update_gold_text_placeholder(font)
-            # screen.blit(gold_text_placeholder, gold_rect_text_placeholder)
+            # GOLD PLACEHOLDER
+            gold_text_placeholder, gold_rect_text_placeholder = helpers.update_gold_text_placeholder(font)
+            screen.blit(gold_text_placeholder, gold_rect_text_placeholder)
 
-            # exit_text_placeholder, exit_rect_text_placeholder = helpers.update_exit_text_placeholder(font)
-            # screen.blit(exit_text_placeholder, exit_rect_text_placeholder)
+            # EXIT PLACEHOLDER
+            exit_text_placeholder, exit_rect_text_placeholder = helpers.update_exit_text_placeholder(font)
+            screen.blit(exit_text_placeholder, exit_rect_text_placeholder)
 
-            # gold_text, gold_text_rect = helpers.update_gold_text(font, self.get_gold())
-            # screen.blit(gold_text, gold_text_rect)
+            # GEM PLACEHOLDER
+            gem_text_placeholder, gem_rect_text_placeholder = helpers.update_gem_text_placeholder(font)
+            screen.blit(gem_text_placeholder, gem_rect_text_placeholder)
 
-            # exit_text, exit_text_rect = helpers.update_exit_text(font, self.__get_exit())
-            # screen.blit(exit_text, exit_text_rect)
+            # STEPS PLACEHOLDER
+            steps_text_placeholder, steps_rect_text_placeholder = helpers.update_steps_text_placeholder(font)
+            screen.blit(steps_text_placeholder, steps_rect_text_placeholder)
+
+            # EXIT
+            exit_text, exit_text_rect = helpers.update_exit_text(font, self.get_exit())
+            screen.blit(exit_text, exit_text_rect)
+
+            # GOLD
+            gold_text, gold_text_rect = helpers.update_gold_text(font, self.get_gold())
+            screen.blit(gold_text, gold_text_rect)
+
+            # GEM
+            gem_text, gem_text_rect = helpers.update_gem_text(font, self.get_gem())
+            screen.blit(gem_text, gem_text_rect)
+
+            # STEPS
+            steps_text, steps_text_rect = helpers.update_steps_text(font, self.get_steps())
+            screen.blit(steps_text, steps_text_rect)
 
             # update display
             pygame.display.flip()
