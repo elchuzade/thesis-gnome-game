@@ -1,8 +1,21 @@
 import constants
 import helpers
 import pygame
+import csv
 import random
 # import numpy as np
+
+
+def add_data_input(__scanned_map, __collected_gold,  __collected_gem, __step_counter):
+    with open("data.txt", "a") as file:
+        file.write('{0};'.format(len(__scanned_map)))
+        file.write('{0};'.format(__step_counter))
+        file.write('{0};'.format(__collected_gold))
+        file.write('{0};'.format(__collected_gem))
+        file.write('\n')
+
+    file.close()
+
 
 class Gold:
     def __init__(self, x, y):
@@ -37,7 +50,7 @@ class Game:
         self.__action_frequency = constants.FPS / constants.GAME_SPEED
         self.__gold = helpers.initialize_all_gold()
         self.__gnome = Gnome(constants.GNOME_X, constants.GNOME_Y)
-        self.__state = helpers.make_state(self.__gnome, self.__gold)
+        self.__state = self.__prev_state = helpers.make_state(self.__gnome, self.__gold)
         self.__gnome_vision = helpers.make_gnome_vision(self.__state, self.__gnome)
         self.__scanned_map = helpers.scan_map([], self.__gnome, self.__gnome_vision, self.__state)
         self.__covered_map = helpers.make_covered_map(self.__state, self.__scanned_map)
@@ -48,7 +61,7 @@ class Game:
         self.__collected_gold = 0
         self.__gold = helpers.initialize_all_gold()
         self.__gnome = Gnome(constants.GNOME_X, constants.GNOME_Y)
-        self.__state = helpers.make_state(self.__gnome, self.__gold)
+        self.__state = self.__prev_state = helpers.make_state(self.__gnome, self.__gold)
         self.__gnome_vision = helpers.make_gnome_vision(self.__state, self.__gnome)
         self.__scanned_map = helpers.scan_map([], self.__gnome, self.__gnome_vision, self.__state)
         self.__covered_map = helpers.make_covered_map(self.__state, self.__scanned_map)
@@ -130,6 +143,8 @@ class Game:
             self.__remove_gem()
 
         if helpers.check_exit_reached(self.__gnome):
+            # Save data
+            add_data_input(self.__scanned_map, self.__collected_gold, self.__collected_gem, self.__step_counter)
             self.reset()
 
         # Update state after moving gnome
@@ -137,6 +152,7 @@ class Game:
         self.__gnome_vision = helpers.make_gnome_vision(self.__state, self.__gnome)
         self.__scanned_map = helpers.scan_map(self.__scanned_map, self.__gnome, self.__gnome_vision, self.__state)
         self.__covered_map = helpers.make_covered_map(self.__state, self.__scanned_map)
+
         return self.__gnome_vision
 
     def __initialize_game(self):
